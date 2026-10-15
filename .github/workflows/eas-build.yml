@@ -1,40 +1,42 @@
-name: Cek kode (TypeScript + Expo)
+name: EAS Build Android
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-  pull_request:
+    inputs:
+      app:
+        description: Aplikasi yang dibuild
+        type: choice
+        options: [admin, kepala]
+        required: true
+      profile:
+        description: Profil build (preview = APK, production = AAB)
+        type: choice
+        options: [preview, production]
+        default: preview
+        required: true
 
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
+    env:
+      EAS_PROJECT_ID: ${{ inputs.app == 'admin' && vars.EAS_PROJECT_ID_ADMIN || vars.EAS_PROJECT_ID_KEPALA }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
       - name: Pasang dependensi
         run: npm install
-      - name: TypeScript (semua workspace)
-        run: npm run typecheck
-      - name: Lint
-        run: npm run lint
-        continue-on-error: true
-      - name: Versi paket sesuai Expo SDK (Admin)
-        working-directory: apps/admin
-        run: npx expo install --check
-        continue-on-error: true
-      - name: Versi paket sesuai Expo SDK (Kepala)
-        working-directory: apps/kepala
-        run: npx expo install --check
-        continue-on-error: true
-      - name: Expo Doctor (Admin)
-        working-directory: apps/admin
-        run: npx expo-doctor
-        continue-on-error: true
-      - name: Expo Doctor (Kepala)
-        working-directory: apps/kepala
-        run: npx expo-doctor
-        continue-on-error: true
+      - name: Kirim build ke EAS
+        working-directory: apps/${{ inputs.app }}
+        run: |
+          eas build --platform android --profile ${{ inputs.profile }} --non-interactive --no-wait --json > build.json
+          cat build.json
+          URL=$(node -e "const j=JSON.parse(require('fs').readFileSync('build.json','utf8'));const b=Array.isArray(j)?j[0]:j;console.log(b.id?'https://expo.dev/accounts/_/projects/_/builds/'+b.id:'')")
+          echo "### Build ${{ inputs.app }} (${{ inputs.profile }}) dikirim" >> "$GITHUB_STEP_SUMMARY"
+          echo "Pantau di dashboard expo.dev > project > Builds. ID: $URL" >> "$GITHUB_STEP_SUMMARY"

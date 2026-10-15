@@ -1,0 +1,19 @@
+[build]
+  base = "apps/peserta-pwa"
+  command = "cd ../.. && npm install && npm run build --workspace @fg/peserta-pwa"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "no-cache"

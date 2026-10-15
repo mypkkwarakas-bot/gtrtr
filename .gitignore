@@ -1,0 +1,34 @@
+# dependencies
+node_modules/
+
+# expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# native (dihasilkan oleh EAS / prebuild)
+android/
+ios/
+
+# environment (jangan commit kredensial)
+.env
+.env.*
+!.env.example
+
+# build artifacts
+*.apk
+*.aab
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# misc
+.DS_Store
+npm-debug.*
+*.log
+.idea/
+.vscode/

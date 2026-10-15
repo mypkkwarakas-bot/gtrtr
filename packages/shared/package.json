@@ -1,0 +1,22 @@
+{
+  "name": "@fg/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "peerDependencies": {
+    "@expo-google-fonts/plus-jakarta-sans": "*",
+    "@react-native-community/netinfo": "*",
+    "@supabase/supabase-js": "*",
+    "@expo/vector-icons": "*",
+    "expo-constants": "*",
+    "expo-font": "*",
+    "expo-haptics": "*",
+    "expo-linear-gradient": "*",
+    "expo-secure-store": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-native-maps": "*",
+    "react-native-safe-area-context": "*"
+  }
+}
