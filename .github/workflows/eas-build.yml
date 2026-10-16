@@ -1,0 +1,33 @@
+name: EAS Build Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Profil build (preview = APK, production = AAB)
+        type: choice
+        options: [preview, production]
+        default: preview
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Pasang dependensi
+        run: npm install
+      - name: Samakan versi paket dengan Expo SDK
+        run: npx expo install --fix
+      - name: Kirim build ke EAS
+        run: |
+          eas build --platform android --profile ${{ inputs.profile }} --non-interactive --no-wait --json > build.json
+          cat build.json
+          echo "### Build (${{ inputs.profile }}) dikirim. Pantau di expo.dev > project > Builds." >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,29 @@
+name: Cek kode (TypeScript + Expo)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Pasang dependensi
+        run: npm install
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+      - name: Versi paket sesuai Expo SDK
+        run: npx expo install --check
+        continue-on-error: true
+      - name: Expo Doctor
+        run: npx expo-doctor
+        continue-on-error: true
